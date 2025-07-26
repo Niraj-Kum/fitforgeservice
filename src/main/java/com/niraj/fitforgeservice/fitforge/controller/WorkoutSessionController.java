@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/v1/workout-sessions")
+@RequestMapping("/v1")
 public class WorkoutSessionController {
 
     private final WorkoutSessionService workoutSessionService;
