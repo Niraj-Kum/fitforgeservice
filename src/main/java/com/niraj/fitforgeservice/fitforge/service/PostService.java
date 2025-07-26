@@ -3,18 +3,22 @@ package com.niraj.fitforgeservice.fitforge.service;
 import com.niraj.fitforgeservice.fitforge.dto.PostCreateRequest;
 import com.niraj.fitforgeservice.fitforge.dto.PostResponse;
 import com.niraj.fitforgeservice.fitforge.dto.PostUpdateRequest;
+import com.niraj.fitforgeservice.fitforge.dto.UserLiteResponse;
 import com.niraj.fitforgeservice.fitforge.entity.Post;
 import com.niraj.fitforgeservice.fitforge.entity.User;
 import com.niraj.fitforgeservice.fitforge.exception.InvalidInputException;
 import com.niraj.fitforgeservice.fitforge.exception.PostNotFoundException;
 import com.niraj.fitforgeservice.fitforge.repository.PostRepository;
 import com.niraj.fitforgeservice.fitforge.repository.UserRepository;
+import com.niraj.fitforgeservice.fitforge.utils.enums.PostTypeEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -22,11 +26,11 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     /**
@@ -73,16 +77,36 @@ public class PostService {
         if (createRequest.content() == null || createRequest.content().trim().isEmpty()) {
             throw new InvalidInputException("Content is required for creating a post.");
         }
-        User user = userRepository.findById(createRequest.userId()).orElseThrow(() -> new InvalidInputException("Invalid user id"));
+        User user = userService.findUserById(createRequest.userId());
         Post newPost = new Post();
         newPost.setUser(user);
         newPost.setContent(createRequest.content());
         newPost.setImageUrl(createRequest.image_url());
+        newPost.setPostType(createRequest.type());
         newPost.setCreatedAt(new Date());
         newPost.setUpdatedAt(new Date());
 
         Post savedPost = postRepository.save(newPost);
         return mapToPostResponse(savedPost);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostResponse> getPostsByType(Integer type) {
+        List<Post> posts;
+        if (Objects.nonNull(type) && PostTypeEnum.BY_KEY.containsKey(type)) {
+            posts = postRepository.findByPostTypeOrderByCreatedAtDesc(type);
+        } else {
+            posts = postRepository.findAllByOrderByCreatedAtDesc();
+        }
+        return posts.stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    private PostResponse convertToDto(Post post) {
+        UserLiteResponse userDto = new UserLiteResponse();
+        userDto.setId(post.getUser().getId());
+        userDto.setName(post.getUser().getName());
+        userDto.setAvatar(post.getUser().getAvatarUrl());
+        return new PostResponse(post.getId(), userDto, post.getContent(), post.getImageUrl(), post.getPostType(), post.getLikes(), post.getComments(), post.getCreatedAt());
     }
 
     /**
@@ -137,13 +161,16 @@ public class PostService {
         if (post == null) {
             return null;
         }
+        UserLiteResponse userLiteResponse = new UserLiteResponse(post.getUser().getId(),post.getUser().getName(), post.getUser().getAvatarUrl());
         return new PostResponse(
                 post.getId(),
-                post.getUser().getId(),
+                userLiteResponse,
                 post.getContent(),
                 post.getImageUrl(),
-                post.getCreatedAt(),
-                post.getUpdatedAt()
+                post.getPostType(),
+                post.getLikes(),
+                post.getComments(),
+                post.getCreatedAt()
         );
     }
 }

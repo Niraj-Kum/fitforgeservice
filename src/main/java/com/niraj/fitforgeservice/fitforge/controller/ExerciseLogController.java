@@ -1,9 +1,6 @@
 package com.niraj.fitforgeservice.fitforge.controller;
 
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogCreateRequest;
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogResponse;
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogUpdateRequest;
-import com.niraj.fitforgeservice.fitforge.dto.FitForgeResponse;
+import com.niraj.fitforgeservice.fitforge.dto.*;
 import com.niraj.fitforgeservice.fitforge.service.ExerciseLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/exercise-logs")
 @Slf4j
 public class ExerciseLogController {
 
@@ -23,58 +20,41 @@ public class ExerciseLogController {
         this.exerciseLogService = exerciseLogService;
     }
 
-
-    /**
-     * Get all exercise logs for a user
-     * GET /v1/users/{user_id}/exercise-logs
-     */
-    @GetMapping("/users/{userId}/exercise-logs")
-    public ResponseEntity<Map<String , List<ExerciseLogResponse>>> getUserExerciseLogs(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("userId") Integer userId) {
-
-        log.info("GET /v1/users/{}/exercise-logs (Auth: {})", userId, authToken);
-        return ResponseEntity.ok(exerciseLogService.getExerciseLogsByUserId(userId));
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<ExerciseLogDto>> getExerciseLogsForUser(@PathVariable Integer userId) {
+        return ResponseEntity.ok(exerciseLogService.getLogsForUser(userId));
     }
 
-    /**
-     * Create a new exercise log entry
-     * POST /v1/exercise-logs
-     */
-    @PostMapping("/exercise-logs")
+    @PostMapping
     public ResponseEntity<FitForgeResponse<String>> createExerciseLog(
-            @RequestHeader("Authorization") String authToken,
-            @RequestBody ExerciseLogCreateRequest createRequest) {
-
-        log.info("POST /v1/exercise-logs (Auth: {})", authToken);
-        log.info("Create Request: {}", createRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new FitForgeResponse<>(exerciseLogService.createLog(createRequest)));
+            @RequestBody CreateExerciseLogDto createDto) {
+        FitForgeResponse<String> response = exerciseLogService.createLog(createDto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     /**
      * Update an exercise log entry
-     * PATCH /v1/exercise-logs/{log_id}
+     * PATCH /v1/{log_id}
      */
-    @PatchMapping("/exercise-logs/{logId}")
+    @PatchMapping("/{logId}")
     public ResponseEntity<FitForgeResponse<String>> updateExerciseLog(
-            @RequestHeader("Authorization") String authToken,
             @PathVariable("logId") Integer logId,
             @RequestBody ExerciseLogUpdateRequest updateRequest) {
 
-        log.info("PATCH /v1/exercise-logs/{} (Auth: {})", logId, authToken);
+        log.info("PATCH /v1/{}", logId);
         log.info("Update Request: {}", updateRequest);
         return ResponseEntity.status(HttpStatus.OK).body(new FitForgeResponse<>(exerciseLogService.updateLog(updateRequest, logId)));
     }
 
     /**
      * Delete an exercise log entry
-     * DELETE /v1/exercise-logs/{log_id}
+     * DELETE /v1/{log_id}
      */
-    @DeleteMapping("/exercise-logs/{logId}")
+    @DeleteMapping("/{logId}")
     public ResponseEntity<Void> deleteExerciseLog(
             @RequestHeader("Authorization") String authToken,
             @PathVariable("logId") Integer logId) {
-        log.info("DELETE /v1/exercise-logs/{} (Auth: {})", logId, authToken);
+        log.info("DELETE /v1/{} (Auth: {})", logId, authToken);
         exerciseLogService.deleteLog(logId);
         return ResponseEntity.noContent().build();
     }

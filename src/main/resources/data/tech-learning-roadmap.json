@@ -1,0 +1,198 @@
+[
+  {
+    "id": "dsa",
+    "title": "Data Structures & Algorithms",
+    "icon": "Code",
+    "phases": [
+      {
+        "id": "dsa-1",
+        "name": "Fundamentals",
+        "topics": [
+          {
+            "id": "dsa-1-1",
+            "name": "Big O Notation",
+            "description": "Understand how to analyze the time and space complexity of algorithms.",
+            "resources": {
+              "platforms": ["LeetCode", "HackerRank"],
+              "docs": [
+                {
+                  "name": "Big O Cheat Sheet",
+                  "url": "https://www.bigocheatsheet.com/"
+                }
+              ]
+            }
+          },
+          {
+            "id": "dsa-1-2",
+            "name": "Arrays & Strings",
+            "description": "Master common operations and patterns for arrays and strings.",
+            "resources": {
+              "courses": [
+                {
+                  "name": "Data Structures on Coursera",
+                  "url": "https://www.coursera.org/learn/data-structures"
+                }
+              ]
+            }
+          },
+          {
+            "id": "dsa-1-3",
+            "name": "Linked Lists",
+            "description": "Singly, doubly, and circular linked lists.",
+            "resources": {}
+          },
+          {
+            "id": "dsa-1-4",
+            "name": "Stacks & Queues",
+            "description": "Learn LIFO and FIFO data structures.",
+            "resources": {}
+          }
+        ]
+      },
+      {
+        "id": "dsa-2",
+        "name": "Non-Linear Data Structures",
+        "topics": [
+          {
+            "id": "dsa-2-1",
+            "name": "Trees, Tries & Graphs",
+            "description": "Understand tree traversal, graph search algorithms (BFS, DFS), and trie applications.",
+            "resources": {
+              "books": ["Cracking the Coding Interview by Gayle Laakmann McDowell"]
+            }
+          },
+          {
+            "id": "dsa-2-2",
+            "name": "Heaps & Priority Queues",
+            "description": "Learn how heaps can be used to implement priority queues.",
+            "resources": {}
+          },
+          {
+            "id": "dsa-2-3",
+            "name": "Hash Tables",
+            "description": "Deep dive into hash functions, collision resolution, and applications.",
+            "resources": {}
+          }
+        ]
+      },
+      {
+        "id": "dsa-3",
+        "name": "Advanced Topics",
+        "topics": [
+          {
+            "id": "dsa-3-1",
+            "name": "Dynamic Programming",
+            "description": "Master the art of solving complex problems by breaking them down into simpler subproblems.",
+            "resources": {}
+          },
+          {
+            "id": "dsa-3-2",
+            "name": "Greedy Algorithms",
+            "description": "Understand when making the locally optimal choice leads to a global optimum.",
+            "resources": {}
+          },
+          {
+            "id": "dsa-3-3",
+            "name": "Advanced Graph Algorithms",
+            "description": "Explore Dijkstra's, A*, and other shortest path algorithms.",
+            "resources": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "system-design",
+    "title": "System Design",
+    "icon": "BrainCircuit",
+    "phases": [
+      {
+        "id": "sd-1",
+        "name": "Foundations",
+        "topics": [
+          {
+            "id": "sd-1-1",
+            "name": "Vertical vs. Horizontal Scaling",
+            "description": "Understand the trade-offs between scaling up and scaling out.",
+            "resources": {}
+          },
+          {
+            "id": "sd-1-2",
+            "name": "Load Balancing",
+            "description": "Learn about different load balancing algorithms and strategies.",
+            "resources": {}
+          },
+          {
+            "id": "sd-1-3",
+            "name": "Database Sharding & Replication",
+            "description": "Understand techniques for distributing data across multiple databases.",
+            "resources": {
+              "books": ["System Design Interview by Alex Xu"]
+            }
+          },
+          {
+            "id": "sd-1-4",
+            "name": "Caching Strategies",
+            "description": "Explore different caching patterns like write-through, write-back, and cache-aside.",
+            "resources": {}
+          }
+        ]
+      },
+      {
+        "id": "sd-2",
+        "name": "High-Level Design",
+        "topics": [
+          {
+            "id": "sd-2-1",
+            "name": "Designing a Social Feed (e.g., Twitter)",
+            "description": "Case study on building a scalable social media feed.",
+            "resources": {}
+          },
+          {
+            "id": "sd-2-2",
+            "name": "Designing a Ride-Sharing Service (e.g., Uber)",
+            "description": "Case study on the architecture of a real-time location-based service.",
+            "resources": {}
+          },
+          {
+            "id": "sd-2-3",
+            "name": "Designing a URL Shortener (e.g., TinyURL)",
+            "description": "Case study on creating a highly available and scalable URL shortening service.",
+            "resources": {}
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fundamentals",
+    "title": "Computer Science Fundamentals",
+    "icon": "BookCopy",
+    "phases": [
+      {
+        "id": "cs-1",
+        "name": "Core Concepts",
+        "topics": [
+          {
+            "id": "cs-1-1",
+            "name": "Operating Systems",
+            "description": "Understand processes, threads, memory management, and file systems.",
+            "resources": {}
+          },
+          {
+            "id": "cs-1-2",
+            "name": "Computer Networking",
+            "description": "Learn the OSI model, TCP/IP, HTTP, and other networking protocols.",
+            "resources": {}
+          },
+          {
+            "id": "cs-1-3",
+            "name": "Database Fundamentals",
+            "description": "Explore SQL vs. NoSQL, indexing, and transactions.",
+            "resources": {}
+          }
+        ]
+      }
+    ]
+  }
+]

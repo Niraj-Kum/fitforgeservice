@@ -7,11 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserProfileResponse {
-    private Integer uid;
-    private String email;
+@AllArgsConstructor
+public class UpdateUserProfileRequest {
     private String name;
     private Integer age;
     private Double weight;

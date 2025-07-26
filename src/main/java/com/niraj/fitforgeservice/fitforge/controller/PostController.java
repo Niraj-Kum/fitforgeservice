@@ -25,21 +25,6 @@ public class PostController {
     }
 
     /**
-     * Get all posts for the feed (paginated)
-     * GET /v1/posts?page=1&limit=20
-     */
-    @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts(
-            @RequestHeader("Authorization") String authToken,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int limit) {
-
-        log.info("GET /v1/posts?page={}&limit={} (Auth: {})", page, limit, authToken);
-        List<PostResponse> posts = postService.getAllPosts(page, limit);
-        return ResponseEntity.ok(posts);
-    }
-
-    /**
      * Get a single post by ID
      * GET /v1/posts/{post_id}
      */
@@ -61,16 +46,21 @@ public class PostController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<PostResponse>> getPosts(
+            @RequestParam(required = false) Integer type) {
+        List<PostResponse> posts = postService.getPostsByType(type);
+        return ResponseEntity.ok(posts);
+    }
+
     /**
      * Create a new post
      * POST /v1/posts
      */
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
-            @RequestHeader("Authorization") String authToken,
             @RequestBody PostCreateRequest createRequest) {
 
-        log.info("POST /v1/posts (Auth: {})", authToken);
         log.info("Create Request: {}", createRequest);
         try {
             PostResponse newPost = postService.createPost(createRequest);

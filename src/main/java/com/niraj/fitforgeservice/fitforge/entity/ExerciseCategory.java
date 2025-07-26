@@ -35,7 +35,7 @@ public class ExerciseCategory extends AuditableEntity {
     @Column(nullable = false)
     private String name;
 
-    private String type;
+    private Integer type;
 
     @Column(name = "display_order")
     private Integer displayOrder;

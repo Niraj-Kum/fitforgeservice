@@ -6,6 +6,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -41,5 +42,5 @@ public class WeightHistory extends AuditableEntity {
     private Double muscleMassLbs;
 
     @Column(name = "logged_at", nullable = false)
-    private LocalDate loggedAt;
+    private Date loggedAt;
 }

@@ -1,13 +1,12 @@
 package com.niraj.fitforgeservice.fitforge.service;
 
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogCreateRequest;
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogResponse;
-import com.niraj.fitforgeservice.fitforge.dto.ExerciseLogUpdateRequest;
+import com.niraj.fitforgeservice.fitforge.dto.*;
 import com.niraj.fitforgeservice.fitforge.entity.ExerciseLog;
 import com.niraj.fitforgeservice.fitforge.entity.User;
 import com.niraj.fitforgeservice.fitforge.exception.InvalidInputException;
 import com.niraj.fitforgeservice.fitforge.repository.ExerciseLogRepository;
 import com.niraj.fitforgeservice.fitforge.utils.constants.ResponseMessages;
+import com.niraj.fitforgeservice.fitforge.utils.helpers.DateHelpers;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,20 +23,20 @@ public class ExerciseLogService {
         this.userService = userService;
     }
 
-    public Map<String , List<ExerciseLogResponse>> getExerciseLogsByUserId(Integer userId) {
-        List<ExerciseLogResponse> logs = exerciseLogRepository.getAllExcersiceLogs(userId);
-        if(logs.isEmpty()) {
-            return new HashMap<>();
+    public List<ExerciseLogDto> getLogsForUser(Integer userId) {
+        List<ExerciseLog> exerciseLogs = exerciseLogRepository.getExerciseLogsByUserId(userId);
+        if(exerciseLogs.isEmpty()) {
+            return new ArrayList<>();
         }
-        return logs.stream().collect(Collectors.groupingBy(ExerciseLogResponse::exerciseName));
+        return exerciseLogs.stream().map(e -> new ExerciseLogDto(e.getId(), e.getUser().getId(), DateHelpers.getFormattedDateTime(e.getCreatedAt()),  e.getExerciseName(), e.getWeightLbs(), e.getReps())).toList();
     }
 
-    public String createLog(ExerciseLogCreateRequest createRequest) {
-        User user = userService.findUserById(createRequest.userId());
+    public FitForgeResponse<String> createLog(CreateExerciseLogDto createRequest) {
+        User user = userService.findUserById(createRequest.getUserId());
         ExerciseLog newLog = createRequest.exerciseLogMapper();
         newLog.setUser(user);
-        exerciseLogRepository.save(newLog);
-        return ResponseMessages.CREATED_SUCCESSFULLY;
+        ExerciseLog savedLog = exerciseLogRepository.save(newLog);
+        return new FitForgeResponse<>(savedLog.getId(), ResponseMessages.CREATED_SUCCESSFULLY);
     }
 
     public String updateLog(ExerciseLogUpdateRequest updateRequest, Integer id) {

@@ -1,6 +1,8 @@
 package com.niraj.fitforgeservice.fitforge.controller;
 
 import com.niraj.fitforgeservice.fitforge.dto.*;
+import com.niraj.fitforgeservice.fitforge.entity.WorkoutPlan;
+import com.niraj.fitforgeservice.fitforge.service.WorkoutPlanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,138 +14,77 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v1/workoutPlan")
 @Slf4j
 public class WorkoutPlanController {
 
-    /**
-     * Get all workout plans for a user
-     * GET /v1/users/{user_id}/workout-plans
-     */
-    @GetMapping("/users/{userId}/workout-plans")
-    public ResponseEntity<List<WorkoutPlanResponse>> getUserWorkoutPlans(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("userId") String userId) {
+    private final WorkoutPlanService workoutPlanService;
 
-        log.info("GET /v1/users/{}/workout-plans (Auth: {})", userId, authToken);
-        List<WorkoutPlanResponse> plans = Arrays.asList(
-                new WorkoutPlanResponse(
-                        UUID.randomUUID().toString(),
-                        userId,
-                        "Beginner Full Body",
-                        LocalDate.of(2025, 1, 1),
-                        true,
-                        Collections.emptyList()
-                ),
-                new WorkoutPlanResponse(
-                        UUID.randomUUID().toString(),
-                        userId,
-                        "Advanced Split",
-                        LocalDate.of(2024, 10, 1),
-                        false,
-                        Collections.emptyList()
-                )
-        );
-        return ResponseEntity.ok(plans);
+    public WorkoutPlanController(WorkoutPlanService workoutPlanService) {
+        this.workoutPlanService = workoutPlanService;
     }
 
     /**
-     * Get a single, detailed workout plan
-     * GET /v1/workout-plans/{plan_id}
+     * Get all workout plans for a user
+     * GET /v1/users/{user_id}
      */
-    @GetMapping("/workout-plans/{planId}")
-    public ResponseEntity<WorkoutPlanResponse> getDetailedWorkoutPlan(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("planId") String planId) {
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<UserWorkoutPlan> getUserWorkoutPlan(
+            @PathVariable("userId") Integer userId) {
 
-        log.info("GET /v1/workout-plans/{} (Auth: {})", planId, authToken);
-        WorkoutPlanResponse plan = new WorkoutPlanResponse(
-                planId,
-                "user-uuid-123",
-                "My New Custom Plan",
-                LocalDate.of(2025, 1, 1),
-                true,
-                Arrays.asList(
-                        new WorkoutDay(
-                                1,
-                                "Push Day",
-                                "Strength",
-                                "10 min cardio",
-                                Arrays.asList(
-                                        new ExerciseCategory("Chest", List.of(new Exercise("Bench Press", "5x5"))),
-                                        new ExerciseCategory("Shoulders", List.of(new Exercise("OHP", "3x8")))
-                                )
-                        ),
-                        new WorkoutDay(
-                                2,
-                                "Pull Day",
-                                "Hypertrophy",
-                                "Dynamic stretches",
-                                Arrays.asList(
-                                        new ExerciseCategory("Back", List.of(new Exercise("Deadlifts", "3x5"))),
-                                        new ExerciseCategory("Biceps", List.of(new Exercise("Bicep Curls", "3x12")))
-                                )
-                        )
-                )
-        );
+        log.info("GET /v1/users/{}", userId);
+        UserWorkoutPlan plan = workoutPlanService.getUserWorkoutPlan(userId);
         return ResponseEntity.ok(plan);
+    }
+
+    @PatchMapping("/{planId}")
+    public ResponseEntity<Void> updateWorkoutPlan(
+            @PathVariable Integer planId,
+            @RequestBody UpdateWorkoutPlanDto updateDto) {
+        workoutPlanService.updatePlan(planId, updateDto);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Create a new workout plan
-     * POST /v1/workout-plans
+     * POST /v1
      */
-    @PostMapping("/workout-plans")
+    @PostMapping("/{userId}")
     public ResponseEntity<WorkoutPlanResponse> createWorkoutPlan(
-            @RequestHeader("Authorization") String authToken,
-            @RequestBody WorkoutPlanCreateRequest createRequest) {
+            @PathVariable("userId") Integer userId,
+            @RequestBody CreateWorkoutPlanRequest createRequest) {
 
-        log.info("POST /v1/workout-plans (Auth: {})", authToken);
+        log.info("POST /v1s");
         log.info("Create Request: {}", createRequest);
-        WorkoutPlanResponse newPlan = new WorkoutPlanResponse(
-                UUID.randomUUID().toString(),
-                createRequest.user_id(),
-                createRequest.name(),
-                createRequest.start_date(),
-                createRequest.is_active(),
-                createRequest.days()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(newPlan);
+        return ResponseEntity.status(HttpStatus.CREATED).body(workoutPlanService.createWorkoutPlan(userId, createRequest));
     }
 
-    /**
-     * Update a workout plan
-     * PATCH /v1/workout-plans/{plan_id}
-     */
-    @PatchMapping("/workout-plans/{planId}")
-    public ResponseEntity<WorkoutPlanResponse> updateWorkoutPlan(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("planId") String planId,
-            @RequestBody WorkoutPlanUpdateRequest updateRequest) {
+    @PostMapping("/{userId}/pause")
+    public ResponseEntity<String> pauseWorkoutPlan(
+            @PathVariable("userId") Integer userId) {
 
-        log.info("PATCH /v1/workout-plans/{} (Auth: {})", planId, authToken);
-        log.info("Update Request: {}", updateRequest);
+        log.info("POST /v1");
+        return ResponseEntity.status(HttpStatus.CREATED).body(workoutPlanService.pauseWorkout(userId));
+    }
 
-        WorkoutPlanResponse updatedPlan = new WorkoutPlanResponse(
-                planId,
-                "user-uuid-123",
-                updateRequest.name() != null ? updateRequest.name() : "Original Plan Name",
-                LocalDate.of(2025, 1, 1),
-                updateRequest.is_active() != null ? updateRequest.is_active() : true,
-                updateRequest.days() != null ? updateRequest.days() : Collections.emptyList()
-        );
-        return ResponseEntity.ok(updatedPlan);
+    @PostMapping("/{userId}/resume")
+    public ResponseEntity<String> resumeWorkoutPlan(
+            @PathVariable("userId") Integer userId) {
+
+        log.info("POST /v1");
+        return ResponseEntity.status(HttpStatus.CREATED).body(workoutPlanService.resumeWorkout(userId));
     }
 
     /**
      * Delete a workout plan
-     * DELETE /v1/workout-plans/{plan_id}
+     * DELETE /v1s/{plan_id}
      */
-    @DeleteMapping("/workout-plans/{planId}")
+    @DeleteMapping("s/{planId}")
     public ResponseEntity<Void> deleteWorkoutPlan(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("planId") String planId) {
-        log.info("DELETE /v1/workout-plans/{} (Auth: {})", planId, authToken);
+            @PathVariable("userId") Integer userId,
+            @PathVariable("planId") Integer planId) {
+        log.info("DELETE /v1s/{} (Auth: {})", planId, userId);
+        String message = workoutPlanService.archiveWorkoutPlan(userId, planId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -11,4 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FitForgeResponse<T> {
     private T response;
+    private Integer id;
+
+    public FitForgeResponse(Integer id, T response) {
+        this.id = id;
+        this.response = response;
+    }
+
+    public FitForgeResponse(T response) {
+        this.response = response;
+    }
 }

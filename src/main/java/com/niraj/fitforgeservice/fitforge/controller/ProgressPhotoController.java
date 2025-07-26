@@ -1,6 +1,8 @@
 package com.niraj.fitforgeservice.fitforge.controller;
 
 import com.niraj.fitforgeservice.fitforge.dto.ProgressPhotoResponse;
+import com.niraj.fitforgeservice.fitforge.entity.ProgressPhoto;
+import com.niraj.fitforgeservice.fitforge.service.ProgressPhotoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,28 +13,30 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
 @Slf4j
 public class ProgressPhotoController {
 
-    /**
-     * Get all progress photos for a user
-     * GET /v1/users/{user_id}/progress-photos
-     */
-    @GetMapping("/users/{userId}/progress-photos")
-    public ResponseEntity<List<ProgressPhotoResponse>> getUserProgressPhotos(
-            @RequestHeader("Authorization") String authToken,
-            @PathVariable("userId") String userId) {
+    private final ProgressPhotoService progressPhotoService;
 
-        log.info("GET /v1/users/{}/progress-photos (Auth: {})", userId, authToken);
-        List<ProgressPhotoResponse> photos = Arrays.asList(
-                new ProgressPhotoResponse(UUID.randomUUID().toString(), userId, "http://example.com/photo1.jpg", "Start of journey", LocalDate.of(2024, 1, 1), LocalDateTime.now().minusMonths(6)),
-                new ProgressPhotoResponse(UUID.randomUUID().toString(), userId, "http://example.com/photo2.jpg", "Week 4 progress!", LocalDate.of(2024, 10, 26), LocalDateTime.now())
-        );
-        return ResponseEntity.ok(photos);
+    public ProgressPhotoController(ProgressPhotoService progressPhotoService) {
+        this.progressPhotoService = progressPhotoService;
+    }
+
+    @GetMapping("/users/{userId}/progress-photos")
+    public ResponseEntity<List<Map<String, String>>> getProgressPhotos(@PathVariable Integer userId) {
+        List<ProgressPhoto> photos = progressPhotoService.getPhotosForUser(userId);
+
+        List<Map<String, String>> response = photos.stream()
+                .map(photo -> Map.of("image_url", photo.getImageUrl()))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     /**

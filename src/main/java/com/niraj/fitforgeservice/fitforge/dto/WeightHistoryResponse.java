@@ -1,8 +1,8 @@
 package com.niraj.fitforgeservice.fitforge.dto;
 
-import java.time.LocalDate;
+import java.util.Date;
 
-public record WeightHistoryResponse(String id, String user_id, double weight_lbs, Double body_fat_pct, Double muscle_mass_lbs,
-                                    LocalDate logged_at) {
+public record WeightHistoryResponse(Integer id, Integer userId, Date loggedAt,
+                                    double weightLbs, Double bodyFatPct, Double muscleMassLbs) {
 
 }

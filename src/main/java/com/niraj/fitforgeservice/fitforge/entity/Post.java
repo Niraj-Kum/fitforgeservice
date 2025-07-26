@@ -38,4 +38,10 @@ public class Post extends AuditableEntity {
 
     @Column(name = "post_type")
     private Integer postType;
+
+    @Column(name = "likes")
+    private Integer likes;
+
+    @Column(name = "comments")
+    private Integer comments;
 }
