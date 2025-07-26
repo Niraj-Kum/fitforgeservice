@@ -128,6 +128,10 @@ public class WorkoutPlanService {
         return new WorkoutPlanResponse(newPlan.getId(), newPlan.getUser().getId(), newPlan.getName(), getFormattedDateTime(newPlan.getStartDate()), newPlan.isActive(), new ArrayList<>());
     }
 
+    public WorkoutPlan findByUserIdAndPlanId(Integer userId, Integer planId) {
+        return workoutPlanRepository.findByUserIdAndPlanId(userId, planId).orElseThrow(() -> new InvalidInputException("No Plan Found"));
+    }
+
     public String archiveWorkoutPlan(Integer userId, Integer planId) {
         WorkoutPlan workoutPlan = workoutPlanRepository.findByUserIdAndPlanId(userId, planId).orElseThrow(() -> new InvalidInputException("No Plan Found"));
         workoutPlanRepository.delete(workoutPlan);
