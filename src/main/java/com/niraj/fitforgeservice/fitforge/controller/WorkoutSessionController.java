@@ -1,7 +1,5 @@
 package com.niraj.fitforgeservice.fitforge.controller;
 
-import com.niraj.fitforgeservice.fitforge.dto.CreateWorkoutSessionDto;
-import com.niraj.fitforgeservice.fitforge.dto.FitForgeResponse;
 import com.niraj.fitforgeservice.fitforge.dto.UpdateWorkoutSessionDto;
 import com.niraj.fitforgeservice.fitforge.dto.WorkoutSessionDto;
 import com.niraj.fitforgeservice.fitforge.dto.WorkoutSessionResponseDto;
@@ -37,7 +35,7 @@ public class WorkoutSessionController {
      * Corresponds to: GET /v1/users/{userId}/workout-sessions/today
      */
     @GetMapping("/users/{userId}/workout-sessions/today")
-    public ResponseEntity<WorkoutSessionDto> getTodaysWorkoutSession(@PathVariable String userId) {
+    public ResponseEntity<WorkoutSessionDto> getTodaysWorkoutSession(@PathVariable Integer userId) {
         Optional<WorkoutSessionDto> sessionDto = workoutSessionService.findTodaysSessionByUserId(userId);
         return sessionDto
                 .map(ResponseEntity::ok)
