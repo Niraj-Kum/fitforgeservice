@@ -61,4 +61,11 @@ public class UserController {
         userService.updateUserProfile(userId, updateUserProfileRequest);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> loginUser(
+            @RequestBody UserLoginRequest userLoginRequest) {
+        userService.loginUser(userLoginRequest);
+        return ResponseEntity.noContent().build();
+    }
 }

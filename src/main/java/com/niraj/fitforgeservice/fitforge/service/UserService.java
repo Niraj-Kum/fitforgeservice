@@ -1,6 +1,7 @@
 package com.niraj.fitforgeservice.fitforge.service;
 
 import com.niraj.fitforgeservice.fitforge.dto.UpdateUserProfileRequest;
+import com.niraj.fitforgeservice.fitforge.dto.UserLoginRequest;
 import com.niraj.fitforgeservice.fitforge.dto.UserProfileResponse;
 import com.niraj.fitforgeservice.fitforge.entity.User;
 import com.niraj.fitforgeservice.fitforge.exception.InvalidInputException;
@@ -63,5 +64,11 @@ public class UserService {
         dto.setHeight(user.getHeightCm());
         dto.setPhotoURL(user.getAvatarUrl());
         return dto;
+    }
+
+    public void loginUser(UserLoginRequest userLoginRequest) {
+        User user = userRepository.findByEmail(userLoginRequest.getEmail()).orElseThrow(() -> new InvalidInputException("Email does not exist"));
+
+
     }
 }
