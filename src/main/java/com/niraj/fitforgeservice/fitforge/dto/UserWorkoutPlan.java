@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 public class UserWorkoutPlan {
     private List<WorkoutDayPlan> plan;
+    private Integer id;
     private String startDate;
     private Boolean isPaused;
     private String pauseDate;

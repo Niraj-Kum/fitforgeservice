@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(
-        sql = "update exercises set is_archived = true where id = ?"
+        sql = "update workout_sessions set is_archived = true where id = ?"
 )
 @SQLRestriction("is_archived = false")
 @EqualsAndHashCode(callSuper = true)

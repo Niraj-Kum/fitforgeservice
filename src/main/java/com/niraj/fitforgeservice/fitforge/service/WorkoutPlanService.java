@@ -96,6 +96,7 @@ public class WorkoutPlanService {
         userWorkoutPlan.setPauseDate(getFormattedDateTime(workoutPlan.getPauseDate()));
         List<WorkoutDayPlan> workoutDayPlans = getWorkoutPlans(workoutPlan.getId());
         userWorkoutPlan.setPlan(workoutDayPlans);
+        userWorkoutPlan.setId(workoutPlan.getId());
         return userWorkoutPlan;
     }
 
