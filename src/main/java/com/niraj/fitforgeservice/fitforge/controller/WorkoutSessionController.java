@@ -36,9 +36,7 @@ public class WorkoutSessionController {
      */
     @GetMapping("/users/{userId}/workout-sessions/today")
     public ResponseEntity<WorkoutSessionDto> getTodaysWorkoutSession(@PathVariable Integer userId) {
-        Optional<WorkoutSessionDto> sessionDto = workoutSessionService.findTodaysSessionByUserId(userId);
-        return sessionDto
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        WorkoutSessionDto sessionDto = workoutSessionService.findTodaysSessionByUserId(userId);
+        return ResponseEntity.ok(sessionDto);
     }
 }

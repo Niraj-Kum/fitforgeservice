@@ -10,7 +10,10 @@ import com.niraj.fitforgeservice.fitforge.repository.WorkoutSessionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.*;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,12 +34,9 @@ public class WorkoutSessionService {
         Date today = new Date();
 
         // Find if a session for this user and date already exists
-        Optional<WorkoutSession> existingSession = workoutSessionRepository.findByUserIdAndSessionDate(userId, today);
+        WorkoutSession sessionToSave = findSessionByUserId(userId);
 
-        WorkoutSession sessionToSave;
-        if (existingSession.isPresent()) {
-            // Update existing session
-            sessionToSave = existingSession.get();
+        if (Objects.nonNull(sessionToSave)) {
             sessionToSave.setDurationSeconds(dto.getDurationSeconds());
         } else {
             User user = userService.findUserById(userId);
@@ -53,10 +53,18 @@ public class WorkoutSessionService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<WorkoutSessionDto> findTodaysSessionByUserId(Integer userId) {
-        Date today = new Date();
-        return workoutSessionRepository.findByUserIdAndSessionDate(userId, today)
-                .map(this::convertToDto);
+    public WorkoutSessionDto findTodaysSessionByUserId(Integer userId) {
+        return convertToDto(findSessionByUserId(userId));
+    }
+
+    private WorkoutSession findSessionByUserId(Integer userId) {
+        ZoneId indianZone = ZoneId.of("Asia/Kolkata");
+        LocalDate today = LocalDate.now();
+
+        LocalDateTime startOfToday = today.atStartOfDay();
+
+        LocalDateTime endOfToday = today.atTime(LocalTime.MAX);
+        return workoutSessionRepository.findByUserIdAndSessionDateBetween(userId, Date.from(startOfToday.atZone(indianZone).toInstant()), Date.from(endOfToday.atZone(indianZone).toInstant())).orElse(null);
     }
 
     private WorkoutSessionDto convertToDto(WorkoutSession session) {
@@ -64,6 +72,7 @@ public class WorkoutSessionService {
         dto.setId(session.getId());
         dto.setUserId(session.getUser().getId());
         dto.setPlanId(session.getWorkoutPlan().getId());
+        dto.setSessionDate(session.getSessionDate());
         dto.setDurationSeconds(session.getDurationSeconds());
         return dto;
     }
