@@ -1,11 +1,15 @@
 package com.niraj.fitforgeservice.fitforge.service;
 
+import com.niraj.fitforgeservice.fitforge.config.JwtUtil;
 import com.niraj.fitforgeservice.fitforge.dto.UpdateUserProfileRequest;
 import com.niraj.fitforgeservice.fitforge.dto.UserLoginRequest;
+import com.niraj.fitforgeservice.fitforge.dto.UserLoginResponse;
 import com.niraj.fitforgeservice.fitforge.dto.UserProfileResponse;
 import com.niraj.fitforgeservice.fitforge.entity.User;
+import com.niraj.fitforgeservice.fitforge.exception.AuthenticationException;
 import com.niraj.fitforgeservice.fitforge.exception.InvalidInputException;
 import com.niraj.fitforgeservice.fitforge.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     public User findUserById(Integer userId) {
@@ -66,9 +74,29 @@ public class UserService {
         return dto;
     }
 
-    public void loginUser(UserLoginRequest userLoginRequest) {
-        User user = userRepository.findByEmail(userLoginRequest.getEmail()).orElseThrow(() -> new InvalidInputException("Email does not exist"));
+    public UserLoginResponse authenticate(UserLoginRequest loginRequest) {
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new AuthenticationException("Invalid credentials."));
 
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new AuthenticationException("Invalid credentials.");
+        }
 
+        String token = jwtUtil.generateToken(user);
+
+        UserProfileResponse userDto = new UserProfileResponse();
+        userDto.setUid(user.getId());
+        userDto.setEmail(user.getEmail());
+        userDto.setName(user.getName());
+        userDto.setPhotoURL(user.getAvatarUrl());
+        userDto.setAge(user.getAge());
+        userDto.setWeight(user.getWeightLbs());
+        userDto.setHeight(user.getHeightCm());
+
+        UserLoginResponse response = new UserLoginResponse();
+        response.setToken(token);
+        response.setUser(userDto);
+
+        return response;
     }
 }

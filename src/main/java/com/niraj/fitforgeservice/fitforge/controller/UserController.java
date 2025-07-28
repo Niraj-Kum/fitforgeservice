@@ -63,9 +63,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> loginUser(
+    public ResponseEntity<UserLoginResponse> loginUser(
             @RequestBody UserLoginRequest userLoginRequest) {
-        userService.loginUser(userLoginRequest);
-        return ResponseEntity.noContent().build();
+        UserLoginResponse response = userService.authenticate(userLoginRequest);
+        return ResponseEntity.ok(response);
     }
 }
